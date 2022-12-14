@@ -1,5 +1,5 @@
 const express = require('express');
-const fs = require('fs').promises;
+const { fsReadFile } = require('./utils/fsUtils')
 const path = require('path');
 // const talker = require('./talker.json');
 
@@ -15,17 +15,13 @@ app.get('/', (_request, response) => {
 });
 
 // Requisito 1
-app.get('/talker', async (req, res) => 
-{ 
-  const talker = await fs.readFile(path.resolve(__dirname, './talker.json'))
-  console.log(talker)
-  
+app.get('/talker', async (_req, res) => { 
+  const talker = await fsReadFile(path.resolve(__dirname, './talker.json'));
   if (!talker) {
-  
-  return res.status(200).json([])
+  return res.status(200).json([]);
 } 
-
- return res.status(HTTP_OK_STATUS).json([...talker])})
+ return res.status(HTTP_OK_STATUS).json(talker);
+});
 
 app.listen(PORT, () => {
   console.log('Online');
