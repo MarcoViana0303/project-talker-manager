@@ -32,6 +32,7 @@ const findTalker = talker.find((idTalker) => idTalker.id === +id);
 if (!findTalker) {
   return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 }
+res.status(200).send(findTalker);
 });
 
 app.listen(PORT, () => {
