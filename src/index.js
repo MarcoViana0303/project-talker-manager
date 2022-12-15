@@ -1,6 +1,6 @@
 const express = require('express');
-const { fsReadFile } = require('./utils/fsUtils')
 const path = require('path');
+const { fsReadFile } = require('./utils/fsUtils');
 // const talker = require('./talker.json');
 
 const app = express();
