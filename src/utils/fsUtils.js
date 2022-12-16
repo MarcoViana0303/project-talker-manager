@@ -10,5 +10,5 @@ async function fsReadFile(path) {
 }
 
 module.exports = {
-  fsReadFile,
+  fsReadFile
 };

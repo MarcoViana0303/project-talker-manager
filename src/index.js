@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { fsReadFile } = require('./utils/fsUtils');
+const crypto = require('crypto');
 // const talker = require('./talker.json');
 
 const app = express();
@@ -34,6 +35,14 @@ if (!findTalker) {
 }
 res.status(200).send(findTalker);
 });
+
+// Requisito 3
+app.post('/login', (req, res) => {
+   // let token = Math.random().toString(16).substring(2);
+   const randomCrypto = () => crypto.randomBytes(8).toString('hex');
+  const callCrypto = randomCrypto();
+  return res.status(200).json({"token": callCrypto})
+})
 
 app.listen(PORT, () => {
   console.log('Online');
