@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const { fsReadFile } = require('./utils/fsUtils');
 const crypto = require('crypto');
+const { fsReadFile } = require('./utils/fsUtils');
 // const talker = require('./talker.json');
 
 const app = express();
@@ -41,8 +41,8 @@ app.post('/login', (req, res) => {
    // let token = Math.random().toString(16).substring(2);
    const randomCrypto = () => crypto.randomBytes(8).toString('hex');
   const callCrypto = randomCrypto();
-  return res.status(200).json({"token": callCrypto})
-})
+  return res.status(200).json({ token: callCrypto });
+});
 
 app.listen(PORT, () => {
   console.log('Online');
