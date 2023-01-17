@@ -6,9 +6,18 @@ async function fsReadFile(path) {
     return JSON.parse(data);
   } catch (e) {
     console.log(`Erro encontrado: ${e.message}`);
+  };
+};
+
+const fsWriteFile = async (path, data) => {
+  try {
+    await fs.writeFile(path, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.log(e.message);
   }
-}
+};
 
 module.exports = {
   fsReadFile,
+  fsWriteFile,
 };

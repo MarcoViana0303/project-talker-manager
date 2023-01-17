@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
-const { fsReadFile } = require('./utils/fsUtils');
+const { fsReadFile, fsWriteFile } = require('./utils/fsUtils');
+const validateEmail = require('./middlewares/validateEmail');
+const validatePassword = require('./middlewares/validatePassword');
+const { generateToken } = require('./utils/generateToken')
+const { postAge, postAuth, postName, postRate, postRate2, postTalk, postWatchedAt} = require('./middlewares/talkers');
 // const talker = require('./talker.json');
 
 const app = express();
@@ -36,12 +40,43 @@ if (!findTalker) {
 res.status(200).send(findTalker);
 });
 
+
 // Requisito 3
-app.post('/login', (req, res) => {
+app.post('/login', (_req, res) => {
    // let token = Math.random().toString(16).substring(2);
-   const randomCrypto = () => crypto.randomBytes(8).toString('hex');
+    const randomCrypto = () => crypto.randomBytes(8).toString('hex');
   const callCrypto = randomCrypto();
-  return res.status(200).json({ token: callCrypto });
+  return res.status(200).json({ token: callCrypto }); 
+});
+
+
+// Requisito 4
+app.post('/login', validateEmail, validatePassword, (req, res) => {
+  const { email, password } = req.body;
+  const token = generateToken();
+
+  if (email && password) {
+    return res.status(200).json({ token: `${token}` });
+  }
+});
+
+// Requisito 5
+app.post('/talker',
+  postAuth,
+  postName,
+  postAge,
+  postTalk,
+  postWatchedAt,
+  postRate,
+  postRate2,
+  async (req, res) => {
+  const { body } = req;
+  const talkerFile = await fsReadFile(path.resolve(__dirname, './talker.json'));
+  const id = talkerFile.reduce((a, c) => Math.max(a, +c.id), 0) + 1;
+  const talkerCreate = { id, ...body };
+  const newData = [...talkerFile, talkerCreate];
+  await fsWriteFile(path.resolve(__dirname, './talker.json'), newData);
+  res.status(201).json(talkerCreate);
 });
 
 app.listen(PORT, () => {
