@@ -1,6 +1,7 @@
 module.exports = (req, res, next) => {
     const { email } = req.body;
-    const regexEmail = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+$/i;
+    const regexEmail = /\S+@\S+\.\S+/;;
+
   
     if (!email) {
       return res.status(400).json({ message: 'O campo "email" é obrigatório' });

@@ -1,11 +1,12 @@
 const express = require('express');
 const path = require('path');
-const crypto = require('crypto');
+//const crypto = require('crypto');
 const { fsReadFile, fsWriteFile } = require('./utils/fsUtils');
 const validateEmail = require('./middlewares/validateEmail');
 const validatePassword = require('./middlewares/validatePassword');
 const { generateToken } = require('./utils/generateToken')
 const { postAge, postAuth, postName, postRate, postRate2, postTalk, postWatchedAt} = require('./middlewares/talkers');
+// const { talkerId } = require('./middlewares/routerTalker')
 // const talker = require('./talker.json');
 
 const app = express();
@@ -41,24 +42,32 @@ res.status(200).send(findTalker);
 });
 
 
-// Requisito 3
-app.post('/login', (_req, res) => {
-   // let token = Math.random().toString(16).substring(2);
-    const randomCrypto = () => crypto.randomBytes(8).toString('hex');
-  const callCrypto = randomCrypto();
-  return res.status(200).json({ token: callCrypto }); 
+// Requisito 3 e requisito 4
+app.post('/login', validateEmail, validatePassword, (_req, res) => {
+  // let token = Math.random().toString(16).substring(2);
+ 
+ const callCrypto = generateToken();
+  
+
+ try {
+   return res.status(200).json({ token: callCrypto });
+ } catch (err) {
+   res.status(500).send({ message: err.message });
+ }
 });
 
 
 // Requisito 4
-app.post('/login', validateEmail, validatePassword, (req, res) => {
+/* app.post('/login', validateEmail, validatePassword, (req, res) => {
   const { email, password } = req.body;
   const token = generateToken();
 
   if (email && password) {
     return res.status(200).json({ token: `${token}` });
   }
-});
+}); */
+
+ 
 
 // Requisito 5
 app.post('/talker',
@@ -78,6 +87,71 @@ app.post('/talker',
   await fsWriteFile(path.resolve(__dirname, './talker.json'), newData);
   res.status(201).json(talkerCreate);
 });
+
+// Requisito 6
+app.put('/talker/:id',
+    postAge,
+    postAuth,
+    postName,
+    postTalk,
+    postWatchedAt,
+    postRate,
+    postRate2,
+    async (req, res) => {
+      const { body } = req;
+      const talkers = await fsReadFile(path.resolve(__dirname, './talker.json'));
+      let { id } = req.params;
+      id = +id;
+      const findTalker = talkers.find((e) => +e.id === +id);
+
+        if (!findTalker) {
+          return res.status(404).json({ message: 'Id not found'});
+        };
+
+        const index = talkers.findIndex((e) => +e.id === +id);
+        const talkerEdit = { id, ...body };
+        talkers[index] = talkerEdit;
+        await fsWriteFile(path.resolve(__dirname, './talker.json'), talkers);
+        res.status(200).json(talkerEdit);
+
+        });
+
+
+// Requisito 7
+app.delete('/talker/:id', postAuth, async (req, res) => {
+  const talker = await fsReadFile(path.resolve(__dirname, './talker.json'));
+  const { id } = req.params;
+  const editedTalker = talker.filter((element) => Number(element.id) !== Number(id));
+
+  await fsWriteFile(path.resolve(__dirname, './talker.json'), editedTalker);
+  res.status(204).json();
+});
+
+// Requisito 8
+/* app.get('/talker/search', postAuth, async (req, res) => {
+  const { q } = req.query;
+  const talkers = await fsReadFile(path.resolve(__dirname, './talker.json'));
+
+  const talkersFilter = talkers.filter((e) => e.name.includes(q));
+
+  if (!q || q.length === 0) {
+    return res.status(200).json(talkers);
+  }
+  return res.status(200).json(talkersFilter);
+}); */
+
+app.get('/talker/search', postAuth, async (req, res) => {
+  try {
+    const { q } = req.query;
+    const oldTalker = await fsReadFile(path.resolve(__dirname, './talker.json'));
+    const filterTalk = oldTalker.filter((elem) => elem.name.includes(q));
+    res.status(200).json(filterTalk);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log('Online');

@@ -1,5 +1,8 @@
-const crypto = require('crypto');
+const { randomBytes } = require('crypto');
 
-const generateToken = () => crypto.randomBytes(8).toString('hex');
+const generateToken = () => {
+    const token = randomBytes(8).toString('hex');
+  return token;;
+}
 
 module.exports = { generateToken };
