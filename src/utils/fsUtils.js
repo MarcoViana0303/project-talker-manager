@@ -6,8 +6,8 @@ async function fsReadFile(path) {
     return JSON.parse(data);
   } catch (e) {
     console.log(`Erro encontrado: ${e.message}`);
-  };
-};
+  }
+}
 
 const fsWriteFile = async (path, data) => {
   try {

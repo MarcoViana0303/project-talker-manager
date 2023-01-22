@@ -1,4 +1,4 @@
-const talkerId =  async (req, res) => {
+/* const talkerId = async (req, res) => {
     let { id } = req.params;
     id = +id;
     const { body } = req;
@@ -6,8 +6,8 @@ const talkerId =  async (req, res) => {
     const findEl = talkers.find((e) => +e.id === +id);
 
     if (!findEl) {
-      return res.status(404).json({ message: 'Id not found'});
-    };
+      return res.status(404).json({ message: 'Id not found' });
+    }
 
     const index = talkers.findIndex((e) => +e.id === +id);
     const editedTalker = { id, ...body };
@@ -25,8 +25,7 @@ const deleteTalker = async (req, res) => {
   res.status(204).json();
 };
 
-
 module.exports = {
     talkerId,
     deleteTalker,
-};
+}; */

@@ -79,7 +79,7 @@ const postAuth = (req, res, next) => {
     next();
   };
   
-  const  postRate2 = (req, res, next) => {
+  const postRate2 = (req, res, next) => {
     const { talk } = req.body;
     const { rate } = talk;
   
