@@ -29,12 +29,11 @@ app.get('/talker/search', postAuth, async (req, res) => {
   if (!q) {
     return res.status(200).json(talkerPath);
   }
-  const filterTalk = talkerPath.filter(( { 
-    name
+  const filterTalk = talkerPath.filter(({ 
+    name,
   }) => name.toLowerCase().includes(q.toLowerCase()));
 
     return res.status(200).json(filterTalk);
-
 });
 
 // Requisito 1
@@ -45,7 +44,6 @@ app.get('/talker', async (_req, res) => {
 } 
  return res.status(HTTP_OK_STATUS).json(talkerPath);
 });
-
 
 // Requisito 2
 app.get('/talker/:id', async (req, res) => {
