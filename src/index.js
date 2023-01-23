@@ -22,20 +22,36 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+// Requisito 8
+app.get('/talker/search', postAuth, async (req, res) => {
+  const { q } = req.query;
+  const talkerPath = await fsReadFile(pathResolve);
+  if (!q) {
+    return res.status(200).json(talkerPath);
+  }
+  const filterTalk = talkerPath.filter(( { 
+    name
+  }) => name.toLowerCase().includes(q.toLowerCase()));
+
+    return res.status(200).json(filterTalk);
+
+});
+
 // Requisito 1
 app.get('/talker', async (_req, res) => { 
-  const talkerPerson = await fsReadFile(path.resolve(pathResolve));
-  if (!talkerPerson) {
+  const talkerPath = await fsReadFile(path.resolve(pathResolve));
+  if (!talkerPath) {
   return res.status(200).json([]);
 } 
- return res.status(HTTP_OK_STATUS).json(talkerPerson);
+ return res.status(HTTP_OK_STATUS).json(talkerPath);
 });
+
 
 // Requisito 2
 app.get('/talker/:id', async (req, res) => {
 const { id } = req.params;
-const talker = await fsReadFile(pathResolve);
-const findTalker = talker.find((idTalker) => idTalker.id === +id);
+const talkerPath = await fsReadFile(pathResolve);
+const findTalker = talkerPath.find((idTalker) => idTalker.id === +id);
 
 if (!findTalker) {
   return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
@@ -45,8 +61,6 @@ res.status(200).send(findTalker);
 
 // Requisito 3 e requisito 4
 app.post('/login', validateEmail, validatePassword, (_req, res) => {
-  // let token = Math.random().toString(16).substring(2);
- 
  const callCrypto = generateToken();
 
  try {
@@ -77,10 +91,10 @@ app.post('/talker',
   postRate2,
   async (req, res) => {
   const { body } = req;
-  const talkerFile = await fsReadFile(pathResolve);
-  const id = talkerFile.reduce((a, c) => Math.max(a, +c.id), 0) + 1;
+  const talkerPath = await fsReadFile(pathResolve);
+  const id = talkerPath.reduce((a, c) => Math.max(a, +c.id), 0) + 1;
   const talkerCreate = { id, ...body };
-  const newData = [...talkerFile, talkerCreate];
+  const newData = [...talkerPath, talkerCreate];
   await fsWriteFile(pathResolve, newData);
   res.status(201).json(talkerCreate);
 });
@@ -96,42 +110,30 @@ app.put('/talker/:id',
     postRate2,
     async (req, res) => {
       const { body } = req;
-      const talkers = await fsReadFile(pathResolve);
+      const talkerPath = await fsReadFile(pathResolve);
       let { id } = req.params;
       id = +id;
-      const findTalker = talkers.find((e) => +e.id === +id);
+      const findTalker = talkerPath.find((e) => +e.id === +id);
 
         if (!findTalker) {
           return res.status(404).json({ message: 'Id not found' });
         }
 
-        const index = talkers.findIndex((e) => +e.id === +id);
+        const index = talkerPath.findIndex((e) => +e.id === +id);
         const talkerEdit = { id, ...body };
-        talkers[index] = talkerEdit;
-        await fsWriteFile(pathResolve, talkers);
+        talkerPath[index] = talkerEdit;
+        await fsWriteFile(pathResolve, talkerPath);
         res.status(200).json(talkerEdit);
         });
 
 // Requisito 7
 app.delete('/talker/:id', postAuth, async (req, res) => {
-  const talker = await fsReadFile(pathResolve);
+  const talkerPath = await fsReadFile(pathResolve);
   const { id } = req.params;
-  const editedTalker = talker.filter((element) => Number(element.id) !== Number(id));
+  const editedTalker = talkerPath.filter((element) => Number(element.id) !== Number(id));
 
   await fsWriteFile(pathResolve, editedTalker);
   res.status(204).json();
-});
-
-// Requisito 8
-app.get('/talker/search', postAuth, async (req, res) => {
-  try {
-    const { q } = req.query;
-    const oldTalker = await fsReadFile(pathResolve);
-    const filterTalk = oldTalker.filter((elem) => elem.name.includes(q));
-    res.status(200).json(filterTalk);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
 });
 
 app.listen(PORT, () => {
