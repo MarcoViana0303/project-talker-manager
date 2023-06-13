@@ -15,7 +15,7 @@
 -  MySQL
 -  MySQL Workbench
 -  Express
--  TDD using Mocha, Chai, Sinon.
+-  TDD usando Mocha, Chai, Sinon.
 -  Docker
 -  ESLint
 -  Git
