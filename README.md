@@ -1,5 +1,5 @@
 <h4 align="center">
-  ![CRUD - Example](./crud.png)
+  ![CRUD](./crud.png)
   <br /><br />
   Uma API CRUD para o cadastro de palestrantes. 
 </h4>
